@@ -75,6 +75,9 @@ total_brackets = data.get("entriesCount")
 picked_brackets = data.get("entriesWithPicksCount")
 
 brackets = [x.get("node") for x in data.get("entries").get("edges")]
+for bracket in brackets:
+    if bracket.get("championTeam"):
+        bracket["championTeam"] = bracket["championTeam"].get("abbrev")
 
 df = pd.DataFrame(brackets)[
     [
