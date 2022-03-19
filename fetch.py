@@ -74,7 +74,11 @@ total_brackets = data.get("entriesCount")
 
 picked_brackets = data.get("entriesWithPicksCount")
 
-brackets = [x.get("node") for x in data.get("entries").get("edges")]
+brackets = [
+    x.get("node")
+    for x in data.get("entries").get("edges")
+    if x.get("node").get("picksCount") == 63
+]
 for bracket in brackets:
     if bracket.get("championTeam"):
         bracket["championTeam"] = bracket["championTeam"].get("abbrev")
