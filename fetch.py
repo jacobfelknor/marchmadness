@@ -1,4 +1,6 @@
-import urllib.request, json
+import json
+import urllib.request
+
 import pandas as pd
 
 
@@ -63,37 +65,45 @@ def generate_excel(df):
     writer.save()
 
 
-# DATA_URL = r"https://picks.cbssports.com/graphql?operationName=PoolSeasonStandingsQuery&variables=%7B%22skipAncestorPools%22%3Afalse%2C%22skipPeriodPoints%22%3Afalse%2C%22gameInstanceUid%22%3A%22cbs-ncaab-tournament-manager%22%2C%22includedEntryIds%22%3A%5B%22ivxhi4tzhi4tqnjtgezdgni%3D%22%5D%2C%22poolId%22%3A%22kbxw63b2gy2dgnzyguza%3D%3D%3D%3D%22%2C%22first%22%3A50%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%224084de9ddd4d6369c4b2625dc756a3d6974b774e746960d3cdfcf64686147d7b%22%7D%7D"
-DATA_URL = r'https://picks.cbssports.com/graphql?operationName=PoolSeasonStandingsQuery&variables={"skipAncestorPools":false,"skipPeriodPoints":false,"gameInstanceUid":"cbs-ncaab-tournament-manager","includedEntryIds":["ivxhi4tzhi4tqnjtgezdgni="],"poolId":"kbxw63b2gy2dgnzyguza====","first":1000}&extensions={"persistedQuery":{"version":1,"sha256Hash":"4084de9ddd4d6369c4b2625dc756a3d6974b774e746960d3cdfcf64686147d7b"}}'
+def fetch_data():
+    # DATA_URL = r"https://picks.cbssports.com/graphql?operationName=PoolSeasonStandingsQuery&variables=%7B%22skipAncestorPools%22%3Afalse%2C%22skipPeriodPoints%22%3Afalse%2C%22gameInstanceUid%22%3A%22cbs-ncaab-tournament-manager%22%2C%22includedEntryIds%22%3A%5B%22ivxhi4tzhi4tqnjtgezdgni%3D%22%5D%2C%22poolId%22%3A%22kbxw63b2gy2dgnzyguza%3D%3D%3D%3D%22%2C%22first%22%3A50%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%224084de9ddd4d6369c4b2625dc756a3d6974b774e746960d3cdfcf64686147d7b%22%7D%7D"
+    DATA_URL = r'https://picks.cbssports.com/graphql?operationName=PoolSeasonStandingsQuery&variables={"skipAncestorPools":false,"skipPeriodPoints":false,"gameInstanceUid":"cbs-ncaab-tournament-manager","includedEntryIds":["ivxhi4tzhi4tqnjtgezdgni="],"poolId":"kbxw63b2gy2dgnzyguza====","first":1000}&extensions={"persistedQuery":{"version":1,"sha256Hash":"4084de9ddd4d6369c4b2625dc756a3d6974b774e746960d3cdfcf64686147d7b"}}'
 
-content = urllib.request.urlopen(DATA_URL)
+    content = urllib.request.urlopen(DATA_URL)
 
-data = json.loads(content.read().decode()).get("data").get("gameInstance").get("pool")
+    data = (
+        json.loads(content.read().decode()).get("data").get("gameInstance").get("pool")
+    )
 
-total_brackets = data.get("entriesCount")
+    total_brackets = data.get("entriesCount")
 
-picked_brackets = data.get("entriesWithPicksCount")
+    picked_brackets = data.get("entriesWithPicksCount")
 
-brackets = [
-    x.get("node")
-    for x in data.get("entries").get("edges")
-    if x.get("node").get("picksCount") == 63
-]
-for bracket in brackets:
-    if bracket.get("championTeam"):
-        bracket["championTeam"] = bracket["championTeam"].get("abbrev")
-
-df = pd.DataFrame(brackets)[
-    [
-        "name",
-        "poolRank",
-        "championTeam",
-        "fantasyPoints",
-        "maxPoints",
-        "correctPicks",
-        "url",
+    brackets = [
+        x.get("node")
+        for x in data.get("entries").get("edges")
+        if x.get("node").get("picksCount") == 63
     ]
-]
+    for bracket in brackets:
+        if bracket.get("championTeam"):
+            bracket["championTeam"] = bracket["championTeam"].get("abbrev")
 
-generate_excel(df)
-# df.to_excel("report.xlsx")
+    df = pd.DataFrame(brackets)[
+        [
+            "name",
+            "poolRank",
+            "championTeam",
+            "fantasyPoints",
+            "maxPoints",
+            "correctPicks",
+            "url",
+        ]
+    ]
+
+    generate_excel(df)
+    # df.to_excel("report.xlsx")
+
+
+if __name__ == "__main__":
+    # running this directly, just run fetch
+    fetch_data()
