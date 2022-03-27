@@ -9,7 +9,10 @@ def generate_excel(df):
     # https://stackoverflow.com/a/57204530
 
     # initialize ExcelWriter and set df as output
-    writer = pd.ExcelWriter("brothers_pullam.xlsx", engine="xlsxwriter")
+    writer = pd.ExcelWriter(
+        "/mnt/c/Users/jacob/Documents/Financials/brothers_pullam.xlsx",
+        engine="xlsxwriter",
+    )
     df.to_excel(writer, sheet_name="Brackets", index=False)
 
     # worksheet is an instance of Excel sheet "Cities" - used for inserting the table
