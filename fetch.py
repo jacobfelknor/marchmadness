@@ -69,13 +69,16 @@ def generate_excel(df):
 
 
 def fetch_data():
-    # DATA_URL = r"https://picks.cbssports.com/graphql?operationName=PoolSeasonStandingsQuery&variables=%7B%22skipAncestorPools%22%3Afalse%2C%22skipPeriodPoints%22%3Afalse%2C%22gameInstanceUid%22%3A%22cbs-ncaab-tournament-manager%22%2C%22includedEntryIds%22%3A%5B%22ivxhi4tzhi4tqnjtgezdgni%3D%22%5D%2C%22poolId%22%3A%22kbxw63b2gy2dgnzyguza%3D%3D%3D%3D%22%2C%22first%22%3A50%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%224084de9ddd4d6369c4b2625dc756a3d6974b774e746960d3cdfcf64686147d7b%22%7D%7D"
-    DATA_URL = r'https://picks.cbssports.com/graphql?operationName=PoolSeasonStandingsQuery&variables={"skipAncestorPools":false,"skipPeriodPoints":false,"gameInstanceUid":"cbs-ncaab-tournament-manager","includedEntryIds":["ivxhi4tzhi4tqnjtgezdgni="],"poolId":"kbxw63b2gy2dgnzyguza====","first":1000}&extensions={"persistedQuery":{"version":1,"sha256Hash":"4084de9ddd4d6369c4b2625dc756a3d6974b774e746960d3cdfcf64686147d7b"}}'
-
-    content = urllib.request.urlopen(DATA_URL)
-
+    DATA_URL = r"https://picks.cbssports.com/graphql?operationName=PoolSeasonStandingsQuery&variables={%22skipAncestorPools%22:false,%22skipPeriodPoints%22:false,%22skipCheckForIncompleteEntries%22:true,%22gameInstanceUid%22:%22cbs-ncaab-tournament-manager%22,%22includedEntryIds%22:[%22ivxhi4tzhiytinrsg4zdemry%22,%22ivxhi4tzhiytmnbugqydonzs%22],%22poolId%22:%22kbxw63b2he2deobzhaza====%22,%22first%22:500,%22orderBy%22:%22CHAMPION%22,%22sortingOrder%22:%22DESC%22}&extensions={%22persistedQuery%22:{%22version%22:1,%22sha256Hash%22:%22797a9386ad10d089d4d493a911bce5a63dae4efb4c02a0a32a40b20de37e002d%22}}&sort=DESC&orderBy=championTeam"
+    # content = urllib.request.urlopen(DATA_URL)
+    # data = (
+    #     json.loads(content.read().decode()).get("data").get("gameInstance").get("pool")
+    # )
+    # NOTE: CBS added authentication to this URL endpoint, so I'm just copying and pasting
+    # the data from the JSON response of DATA_URL in my browser to the "data.json" file
+    data = open("./data.json", "r")
     data = (
-        json.loads(content.read().decode()).get("data").get("gameInstance").get("pool")
+        json.loads(data.read()).get("data").get("gameInstance").get("pool")
     )
 
     total_brackets = data.get("entriesCount")
